@@ -6,6 +6,7 @@
 <p>
     <?php
     echo "Hello hhmmWorld";
+    echo "Hello," . " " . "world" . "!";
     ?>
 </p>
 </body>
