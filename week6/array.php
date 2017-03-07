@@ -7,7 +7,7 @@
     <?php
     $provisionedActivity=array("specs","mugs","sausagerolls");//declares the array
 
-    echo $provisionedActivity[0]; //outputs "specs"
+    echo $provisionedActivity[0];//outputs "specs"
 
     $provisionedActivity[1]= "hugs";//changes mugs to hugs
 
