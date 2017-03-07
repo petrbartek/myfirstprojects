@@ -16,9 +16,8 @@
         case "mugs":
          echo "you have to be 18 to buy mugs ";
          break;
-        case "sausagerolls":
-         echo "you have to be 21 t buy sausagerolls ";
-         break;
+        case "sausagerolls";
+         echo "you have to be 21 to buy";
         default:
             echo "  enjoy  ";
     }
