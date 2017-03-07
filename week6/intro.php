@@ -15,7 +15,10 @@
         print "mugs";
     }
     elseif($myage >= "21"){
-        print "susagerolls";
+        print "sausagerolls";
+    }
+    else {
+        "you cannot buy anything";
     }
     ?>
 </p>
