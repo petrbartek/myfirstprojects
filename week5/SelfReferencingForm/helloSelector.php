@@ -9,7 +9,13 @@
 echo "Where would like to say hello?";
 echo "<br>";
 
-$planets = array("Earth", "Mars", "Uranus");
-echo $planets;
+echo "Earth";
 echo "<br>";
+
+echo "Uranus";
+echo "<br>";
+
+echo "Mars";
+echo "<br>";
+
 ?>
