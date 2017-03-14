@@ -5,7 +5,7 @@
 <body>
 <p>
     <?php
-    $wantedgood = array("spec", "mugs", "sausagerolls");
+    $wantedgood ="spec";
 
     switch($wantedgood){
         case "spec":
