@@ -9,6 +9,7 @@
 $people = array("petr", "ashley", "steve", "will", "coco", "tukan", "bart", "les");
 sort($people);
 print rand($people);
+$people =strtoupper($people);
 
 
 
