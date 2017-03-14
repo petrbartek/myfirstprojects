@@ -5,7 +5,7 @@
 <body>
 <p>
     <?php
-    $provisionedActivity=array("specs","mugs","sausagerolls");//declares the array
+    $provisionedActivity = array("specs","mugs","sausagerolls");//declares the array
 
     echo $provisionedActivity[0];//outputs "specs"
 
