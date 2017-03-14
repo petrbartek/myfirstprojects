@@ -5,20 +5,20 @@
 <body>
 <p>
     <?php
-   $myage >= "18";
+   $myage = "18";
 
 
     if($myage >= "16"){
-        print "specs";
+        print "you can buy specs only";
     }
     elseif($myage >="18"){
-        print "mugs";
+        print "you can buy mugs";
     }
     elseif($myage >= "21"){
-        print "sausagerolls";
+        print "you ca buy sausagerolls";
     }
     else {
-        "you cannot buy anything";
+       print "you cannot buy anything";
     }
     ?>
 </p>
