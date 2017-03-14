@@ -1,7 +1,7 @@
 <?php
 $items = array("specs", "mugs", "sausages");
 
-echo "for sale today: $items <br>";
+//echo "for sale today: $items <br>";
 
 do {
     $items = rand(0,1,2);
