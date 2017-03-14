@@ -6,3 +6,9 @@
  * Time: 15:31
  */
 
+echo "Whre would like to say hello?";
+
+$planets = array("Earth", "Mars", "Uranus");
+echo $planets;
+echo "<br>";
+?>
