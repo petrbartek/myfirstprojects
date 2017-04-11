@@ -45,7 +45,7 @@ while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 	<td align="left">' . $row['lname'] . '</td>
 	<td align="left">' . $row['fname'] . '</td>
 	<td align="left">' . $row['email'] . '</td>
-	<td align="left">' . $row['regdat'] . '</td>
+	<td align="left">' . $row[date("d-m-Y",regdat)] . '</td>
 	</tr>';
 	}
 	echo '</table>'; // Close the table.
