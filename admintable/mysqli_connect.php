@@ -2,8 +2,8 @@
 // This creates a connection to the admintable database and to MySQL, 
 // It also sets the encoding.
 // Set the access details as constants:
-DEFINE ('DB_USER', 'webmaster');
-DEFINE ('DB_PASSWORD', 'coffeepot');
+DEFINE ('DB_USER', 'azure');
+DEFINE ('DB_PASSWORD', 'graduaceRGU@2016');
 DEFINE ('DB_HOST', 'localhost');
 DEFINE ('DB_NAME', 'admintable');
 
