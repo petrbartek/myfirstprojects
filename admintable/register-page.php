@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (empty($errors)) { // If everything's OK
 	// Register the user in the database...
 		// Make the query:
-		$q = "INSERT INTO users (fname, lname, email, psword, registration_date) VALUES ('$fn', '$ln', '$e', SHA1('$p'), ".date('Y/m/d')." )";		
+		$q = "INSERT INTO users (fname, lname, email, psword, registration_date) VALUES ('$fn', '$ln', '$e', SHA1('$p'), ".date('m-d-Y')." )";		
 		$result = @mysqli_query ($link, $q); // Run the query.
 		if ($result) { // If it ran OK
 		header ("location: register-thanks.php"); 
