@@ -1,0 +1,3 @@
+<!--The code have been used from "Practical PHP and MySQL Website Database A Simplified Aproach" book form Adrian W. West -->
+
+//The code have been used from "Practical PHP and MySQL Website Database A Simplified Aproach" book form Adrian W. West

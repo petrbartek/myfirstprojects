@@ -1,0 +1,583 @@
+upload meeeee
+
+
+Select file:
+
+<input type="file" name="data" />
+
+<input type="submit" name="submit" value="Upload File" /></form>
+
+<?php
+} else {
+// check uploaded file size
+if ($_FILES['data']['size'] == 0) {
+die("ERROR: Zero byte file upload");
+}
+// check if file type is allowed (optional)
+$allowedFileTypes = array("image/gif", "image/jpeg", "image/pjpeg");
+if (!in_array($_FILES['data']['type'], $allowedFileTypes)) {
+die("ERROR: File type not permitted");
+} // check if this is a valid upload
+if (!is_uploaded_file($_FILES['data']['tmp_name'])) {
+die("ERROR: Not a valid file upload"); } // set the name of the target directory
+$uploadDir = "./uploads/"; // copy the uploaded file to the directory
+move_uploaded_file($_FILES['data']['tmp_name'], $uploadDir . $_FILES['data']['name']) or die("Cannot copy uploaded file"); // display success message
+echo "File successfully uploaded to " . $uploadDir .$_FILES['data']['name']; } ?>
+
+PHP significantly simplifies the task of uploading files through a Web form, by exposing a special $_FILES array which contains information on files sent through the POST method.
+
+There are two components to this listing, the file upload form and the business logic that processes the submitted form.
+
+The form must be submitted using POST, and must contain the enctype=”multipart/form-data” attribute, to ensure that the file is correctly uploaded. The hidden form variable MAX_FILE_SIZE specifies the maximum allowed upload size, in bytes; files larger than this will be rejected.
+Once a file has been uploaded, it is stored in a temporary directory and information on its size, type, and original and temporary names is saved to the $_FILES array. The temporary file name is then provided to the move_uploaded_file() function, which is used to copy the file from the temporary directory to a new location.
+It’s generally considered a good idea to verify the integrity of the upload before accepting it. Typical checks include ensuring the file is not a zero-byte file with the
+‘size’ key of the $_FILES array, and verifying that the file was indeed uploaded through a POST operation (and not “injected” into the script artificially by a
+malicious user) with the is_uploaded_file() function. You may also choose to test the file type if your application only allows particular types of files to be
+uploaded.
+
+TIP
+
+Don’t use the file extension to determine the file type, as it’s easy to rename an executable file with a “safe” extension. Instead, use the ‘type’ key of the $_FILES array to check the Multipurpose Internet Mail Extensions (MIME) type of the file, and only allow those types you deem to be safe.
+
+Understanding PHP’s File Upload Variables
+
+There are six important PHP configuration variables influencing POST file uploads:
+
+“file_uploads” This variable, a Boolean, indicates whether or not file uploads should be permitted. Set this to true if your application supports file uploads.
+“max_execution_time” This variable determines the number of seconds a PHP script can run before it is forcibly terminated by the engine. If your application expects large file uploads, or if a slow network link is used for the file transfer, increase this value to avoid your script automatically terminating in the middle of a long upload.
+“max_input_time” This variable controls the maximum amount of time a script has to receive input data, including POST-ed files. As with the max_
+execution_time variable, increase this value if you anticipate large files or slow transfers.
+“upload_max_filesize” This variable determines the maximum size of an uploaded file, and it gets higher priority than the hidden MAX_FILE_SIZE
+form field.
+“post_max_size” This variable determines the maximum size of data PHP can accept in a single POST request, including file uploads. This should be at least equal to the value defined in “upload_max_filesize”; in most cases, it is larger.
+“upload_tmp_dir” This variable determines the temporary directory used for uploaded files. It defaults to the system’s temporary directory.
+In case you’re confused by the interaction between these variables, think of it this way: “upload_max_filesize” applies to each of the files being uploaded to the server and “post_max_size” defines how many of them (or how much of them) can come through in a single POST request. This is why you’d typically want
+“post_max_size” to be larger than “upload_max_filesize”.
+
+Our Upload Form Look Like:
+
+PHP File Upload Form
+
+After Submit Our Upload Form:
+
+upload success
+
+Now We Create another File Upload Form with MySQL Database that also supports multiple extensions Files:
+
+Create a database called upload
+
+CREATEDATABASE`upload`;
+Create table called gravator
+
+
+CREATE TABLE IF NOT EXISTS `gravator` (
+
+`id` int(11) NOT NULL AUTO_INCREMENT,
+
+`path` varchar(200) NOT NULL,
+
+PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+Now create uploader.php file for uploading the file
+
+
+<?php
+
+if(isset($_FILES['filefield'])){
+$file=$_FILES['filefield'];
+$upload_directory='uploads/';
+$ext_str = "gif,jpg,jpeg,mp3,tiff,bmp,doc,docx,ppt,pptx,txt,pdf";
+$allowed_extensions=explode(',',$ext_str);
+$max_file_size = 10485760;//10 mb remember 1024bytes =1kbytes /* check allowed extensions here */
+$ext = substr($file['name'], strrpos($file['name'], '.') + 1); //get file extension from last sub string from last . character
+if (!in_array($ext, $allowed_extensions) ) {
+echo "only".$ext_str." files allowed to upload"; // exit the script by warning
+
+} /* check file size of the file if it exceeds the specified size warn user */
+
+if($file['size']>=$max_file_size){
+
+echo "only the file less than ".$max_file_size."mb allowed to upload"; // exit the script by warning
+
+}
+
+//if(!move_uploaded_file($file['tmp_name'],$upload_directory.$file['name'])){
+
+$path=md5(microtime()).'.'.$ext;
+
+if(move_uploaded_file($file['tmp_name'],$upload_directory.$path)){
+
+mysql_connect("localhost","root","");
+
+mysql_select_db("upload");
+
+echo"Your File Successfully Uploaded";
+
+mysql_query("INSERT INTO gravator VALUES ('', '$path')");
+
+}
+
+else{
+
+echo "The file cant moved to target directory."; //file can't moved with unknown reasons likr cleaning of server temperory files cleaning
+
+}
+
+}
+
+/*
+
+Hurrey we uploaded a file to server successfully.
+
+*/
+
+?>
+<form action="" method="post" enctype="multipart/form-data">
+<label>Upload File
+
+<input id="filefield" type="file" name="filefield" />
+
+</label>
+
+<label>
+
+<input id="Upload" type="submit" name="Upload" value="Upload" />
+
+<!-- This hidden input will force the PHP max upload size. it may work on all servers. -->
+
+<input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+
+</label></form>
+
+Download file with PHP
+
+To start with create two new files and call them download.php and index.php.
+Open the download_test.php and type the following:
+
+<a href="download.php?file=picture.jpg">Download file</a>
+Now Open the download.php file and remove the entire content which your editor added to it, then start typing the following:
+
+<?php // block any attempt to the filesystem
+if (isset($_GET['file']) && basename($_GET['file']) == $_GET['file']) {
+$filename = $_GET['file'];
+} else {
+$filename = NULL;
+}
+?>
+First we are checking if the the url contains the parameter file and whether basename($_GET[‘file’]) and $_GET[‘file’] have the same value – this is to prevent any attackers from downloading files we don´t want them to download.
+
+If the condition is true then we are assigning the value of the file to the variable called $filename, however if the condition is false then we are assigning NULL to the variable.
+
+On the next line type:
+
+First we are checking if the the url contains the parameter file and whether basename($_GET[‘file’]) and $_GET[‘file’] have the same value – this is to prevent any attackers from downloading files we don´t want them to download.
+
+If the condition is true then we are assigning the value of the file to the variable called $filename, however if the condition is false then we are assigning NULL to the variable.
+
+On the next line type:
+
+// define error message
+$err = 'Sorry, the file you are requesting is unavailable.';
+This line of code creates a new variable called $err and assigns the default message which will be displayed to the user when the file is unavailable or any other problem occurs.
+
+<?php
+if (!$filename) {
+// if variable $filename is NULL or false display the message
+echo $err;
+} else {
+// define the path to your download folder plus assign the file name
+$path = 'downloads/'.$filename;
+// check that file exists and is readable
+if (file_exists($path) && is_readable($path)) {
+// get the file size and send the http headers
+$size = filesize($path);
+header('Content-Type: application/octet-stream');
+header('Content-Length: '.$size);
+header('Content-Disposition: attachment; filename='.$filename);
+header('Content-Transfer-Encoding: binary');
+// open the file in binary read-only mode
+// display the error messages if the file can´t be opened
+$file = @ fopen($path, 'rb');
+if ($file) {
+// stream the file and exit the script when complete
+fpassthru($file);
+exit;
+} else {
+echo $err;
+}
+} else {
+echo $err;
+}
+}
+?>
+What´s happening here is – first we check whether the $filename is NULL and if so we are displaying our message $err message. If it isn´t NULL then we are creating the variable called $path which stores the path to the file and assigns the populated name of the file to the end of it.
+
+Next we are checking whether the file exists and is readable, if so then we are sending the appropriate http headers with file size and opening the file in binary read-only mode (rb). Then, if the file has been opened successfully, we are using the fpassthru() function to write the result to the output buffer.
+If any of the condition was unsuccessful we are displaying our $err message.
+
+Our File Download Output..
+
+File Download Using PHP
+
+Uploading and Downloading Files To MySQL Database
+
+Using PHP to upload files into MySQL database sometimes needed by some web application. For instance for storing pdf documents or images to make som kind of online briefcase (like Yahoo briefcase).
+
+For the first step, let’s make the table for the upload files.
+
+</pre>
+CREATE TABLE IF NOT EXISTS `files` (
+
+`id` int(11) NOT NULL AUTO_INCREMENT,
+
+`name` varchar(200) NOT NULL,
+
+`type` varchar(30) NOT NULL,
+
+`size` int(11) NOT NULL,
+
+`content` mediumblob NOT NULL,
+
+PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+
+<pre>
+Uploading a file to MySQL is a two step process. First you need to upload the file to the server then read the file and insert it to MySQL.
+
+For uploading a file we need a form for the user to enter the file name or browse their computer and select a file. The inputtype=”file”is used for that purpose.
+
+Example : upload.php
+
+
+<?php if(isset($_POST['upload']) && $_FILES['userfile']['size'] > 0)
+
+{
+
+$fileName = $_FILES['userfile']['name'];
+
+$tmpName = $_FILES['userfile']['tmp_name'];
+
+$fileSize = $_FILES['userfile']['size'];
+
+$fileType = $_FILES['userfile']['type'];
+
+$fp = fopen($tmpName, 'r');
+
+$content = fread($fp, filesize($tmpName));
+
+$content = addslashes($content);
+
+fclose($fp);
+
+if(!get_magic_quotes_gpc())
+
+{
+
+$fileName = addslashes($fileName);
+
+}
+
+mysql_connect("localhost","root","");
+
+mysql_select_db("upload");
+
+$query = "INSERT INTO files (name, size, type, content ) ".
+
+"VALUES ('$fileName', '$fileSize', '$fileType', '$content')";
+
+mysql_query($query) or die('Error, query failed');
+
+echo "
+File $fileName uploaded
+";
+
+}
+
+?>
+<form method="post" enctype="multipart/form-data">
+<table width="350" border="0" cellspacing="1" cellpadding="1">
+<tbody>
+<tr>
+<td width="246">
+<input type="hidden" name="MAX_FILE_SIZE" value="2000000" />
+
+<input id="userfile" type="file" name="userfile" /></td>
+<td width="80"><input id="upload" type="submit" name="upload" value=" Upload " /></td>
+</tr>
+</tbody>
+</table>
+</form>
+
+Before you do anything with the uploaded file. Youshould notassume that the file was uploaded successfully to the server. Always check to see if the file was successfully uploaded by looking at the file size. If it’s larger than zero byte then we can assume that the file is uploaded successfully.
+
+PHP saves the uploaded file with a temporary name and save the name in$_FILES[‘userfile’][‘tmp_name’]. Our next job is to read the content of this file and insert the content to database. Always make sure that you useaddslashes()to escape the content. Usingaddslashes()to the file name is also recommended because you never know what the file name would be.
+
+That’s it now you can upload your files to MySQL.
+
+Now it’s time to write the script to download those files.
+
+Downloading Files From MySQL Database
+
+When we upload a file to database we also save the file type and length. These were not needed for uploading the files but is needed for downloading the files from the database.
+
+The download page list the file names stored in database. The names are printed as a url. The url would look like download.php?id=3.
+
+Let’s Create download.php file:
+
+
+Download File From MySQL
+
+<?php
+mysql_connect("localhost","root","");
+
+mysql_select_db("upload");
+
+$query = "SELECT id, name FROM files";
+
+$result = mysql_query($query) or die('Error, query failed');
+
+if(mysql_num_rows($result) == 0)
+
+{
+
+echo "Database is empty
+";
+
+}
+
+else
+
+{
+
+while(list($id, $name) = mysql_fetch_array($result))
+
+{
+
+?>
+
+<?php } } ?>
+
+When you click the download link, the $_GET[‘id’] will be set. We can use this id to identify which files to get from the database. Below is the code for downloading files from MySQL Database.
+
+
+<?php
+mysql_connect("localhost","root","");
+mysql_select_db("upload");
+if(isset($_GET['id'])) {
+// if id is set then get the file with the id from database
+$id = $_GET['id'];
+$query = "SELECT name, type, size, content " . "FROM files WHERE id = '$id'";
+$result = mysql_query($query) or die('Error, query failed');
+list($name, $type, $size, $content) = mysql_fetch_array($result);
+header("Content-length: $size");
+header("Content-type: $type");
+header("Content-Disposition: attachment; filename=$name");
+echo $content;
+exit;
+}
+?>
+
+Putting It All Together
+
+</pre>
+
+<?php
+
+mysql_connect("localhost","root","");
+
+mysql_select_db("upload");
+
+if(isset($_GET['id'])) { // if id is set then get the file with the id from database
+
+$id = $_GET['id'];
+
+$query = "SELECT name, type, size, content FROM files WHERE id = $id";
+
+$result = mysql_query($query) or die('Error, query failed');
+
+list($name, $type, $size, $content) =
+
+mysql_fetch_array($result);
+
+header("Content-length: $size");
+
+header("Content-type: $type");
+
+header("Content-Disposition: attachment; filename=$name");
+
+echo $content; exit;
+
+}
+
+?>
+
+Download File From MySQL
+
+<?php
+
+$query = "SELECT id, name FROM files";
+
+$result = mysql_query($query) or die('Error, query failed');
+
+if(mysql_num_rows($result) == 0)
+
+{
+
+echo "Database is empty";
+
+}
+
+else
+
+{
+
+while(list($id, $name) = mysql_fetch_array($result))
+
+{
+
+?>
+
+<a href="download2.php?id=<?php echo $id;?>"><?php echo $name; ?></a>
+
+<?php
+
+}
+
+}
+
+?>
+
+<pre>
+Our Output Look like:
+PHP download success
+
+
+
+Masud Alam
+Hi, My name is Masud Alam, love to work with Open Source Technologies, living in Dhaka, Bangladesh. I graduated in 2009 with a bachelor’s degree in Engineering from State University Of Bangladesh, I’m also a Certified Engineer on ZEND PHP 5.3, I served my first five years a number of leadership positions at Winux Soft Ltd, SSL Wireless Ltd, CIDA and MAX Group where I worked on ERP software and web development., but now i’m a co-founder and Chief Executive Officer and Managing Director of TechBeeo Software Consultancy Services Ltd. I’m also a Course Instructor of ZCPE PHP 7 Certification and professional web development course at w3programmers Training Institute – a leading Training Institute in the country.
+PHP FILE, MAIL, SESSION AND COOKIE
+TAGGED DOWNLOAD FILE WITH PHP, DOWNLOADING FILES FROM MYSQL DATABASE, INCREASING FILE UPLOAD SIZE BY .HTACCESS, INCREASING FILE UPLOAD SIZE BY PHP.INI, PHP.INI, UNDERSTANDING PHP’S FILE UPLOAD VARIABLES, UPLOADING AND DOWNLOADING FILES TO MYSQL DATABASE
+Post navigation
+? Previous
+Next ?
+19 comments on “File Upload and Download with PHP”
+BWENGYE AMOS
+22 FEBRUARY, 2013 AT 2:37 PM
+Thank you so much.I hope i have learnt so much from this article.
+REPLY
+SHAAMII
+14 NOVEMBER, 2016 AT 11:52 AM
+apply carefully and step wise i got the desired result
+REPLY
+STRIPZ
+22 MARCH, 2013 AT 3:30 PM
+Aw do I use dis code with mp3 and mp4 files
+REPLY
+WILLIAM PITO
+28 MARCH, 2013 AT 4:36 PM
+hi am making a system that needs an upload and download of
+– pictures
+– audios
+– videos
+may you please give me any links that can help me undergo this calamity pliz
+REPLY
+RHEA
+29 JULY, 2013 AT 10:54 AM
+Wow! It’s great!
+It helps a lot …
+
+Thank you so much :))
+REPLY
+IRA
+3 DECEMBER, 2013 AT 8:46 PM
+I already use the download code, but when I run it, nothing display. But when I right click , view source code the file name is there. Can anyone help me. Thank you.
+REPLY
+IRA
+3 DECEMBER, 2013 AT 10:02 PM
+The page can display but why when I click the image, the pop-up Save as did not display. Can some one tell me what should I do.
+REPLY
+SABA
+27 FEBRUARY, 2014 AT 10:43 PM
+for download, download2.php is not available.
+so i cannot download the file.
+plz upload download2.php file
+REPLY
+MOBSKAT.GA
+22 FEBRUARY, 2015 AT 6:12 PM
+Nice article pls reply for d download.php
+REPLY
+FERMEKO
+13 APRIL, 2015 AT 5:11 AM
+can you give the example of file upload and download using PHP-MySqli ?
+REPLY
+FINCANTIERI
+22 MAY, 2015 AT 10:30 AM
+sir, have you tried to create an uploading and downloading of any file format, without database?, using nginx server and not apache server and using freebsd 10.0 not in windows.. please email me, if it is applicable to what i ask.. Thank you..
+REPLY
+MD. SHAHAB UDDIN
+29 JUNE, 2015 AT 7:32 AM
+I need the project of source file with full project with database file.
+please give me as early as possible.
+REPLY
+MD. SHAHAB UDDIN
+29 JUNE, 2015 AT 7:34 AM
+I need the file upload and download projects with database file & full project with source file.
+please give the file as early as possible.
+REPLY
+CHIKODI
+7 JULY, 2015 AT 8:54 PM
+alert(‘successfully uploaded’);
+window.location.href=’index.php?success’;
+
+alert(‘error while uploading file’);
+window.location.href=’index.php?fail’;
+
+This code worked on my localhost but could not work on my cpanel webserver.
+It is given me error: failed to open stream:permission not given on …../public.html/upload.php
+REPLY
+CHE
+20 SEPTEMBER, 2016 AT 5:58 PM
+Hello, Masud Alam. Thanks for this tutorial. Uhm but please please send me the code for download2.php! Please i need this for my final project
+REPLY
+TEJASWINI PATIL
+10 OCTOBER, 2016 AT 9:00 AM
+I need file upload and download properly please give me some source as early as possible please.
+REPLY
+NUMEXY
+24 DECEMBER, 2016 AT 3:19 AM
+Thanks the hell out of you, i’ve been searching for these article for a very long time. Anyway, thanks alot for the tut, i’ll stay updated!
+REPLY
+SUJATA
+14 JANUARY, 2017 AT 8:12 PM
+i tried the exact same code but the download is not working.
+When clicking on Download link, it directs me to a link like this: //download.php?file=beans.jpg
+where beans.jpg is the file i am attempting to download.
+Also, tried with pdf but doesn’t work.
+Any guidance is greatly appreciated.
+
+Thanks in advance.
+REPLY
+SUJATA
+15 JANUARY, 2017 AT 1:42 PM
+I managed to get the download working now. But the problem now is , after i download and try to open, i get this message – “failed to load pdf document” ,
+when i go to my folder and try to open with a Document viewer from there, it says- pdf file is damaged.
+Any suggestions to avoid it ?
+Thanks in advance !!
+REPLY
+Leave a Reply
+YOUR EMAIL ADDRESS WILL NOT BE PUBLISHED. REQUIRED FIELDS ARE MARKED *
+
+COMMENT 
+
+NAME * 
+
+EMAIL * 
+
+WEBSITE 
+
+POST COMMENT
+
+Search for:
